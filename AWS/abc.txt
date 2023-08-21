@@ -20,12 +20,10 @@ Việc lựa chọn class phù thuộc vào các yếu tố như:
 * Tần suất truy cập, thời gian cần có file khi có yêu cầu
 * Mục đích sử dụng: Document, Image, Log file, Backup file, Archive
 
-
-* **S3 Standard**: Loại mặc định khi tạo object mà không chỉ định classe, phù hợp cho hầu hết các usecase
-* **S3 Intelligent**: Monitor tần suất access của các object một cách tự động để move xuống các class rẻ tiền hơn giúp tiết kiệm chi phí. Chỉ applu cho obect >= 128KB. KH phải chịu thêm chi phí Monitor.
-* S3 Standard infrequently access (Standard IA): Phù hợp cho các data ít khi được access nhưng khi access cần có ngay. Availability 99,9% (Nhỏ hơn Standard 99,99%).
-* S3 one-zone infrequently access (One zone IA): rẻ hơn Standard IA 20% do chỉ lưu trữ trên 1 AZ. Phù hợp cho các data có thể dễ dàng tạo ra nếu không may bị mất (report, file image resize). Availability 95%.
-* **S3 Glacier:** Phù hợp cho việc lưu trữ những data có yêu cầu thời gian lưu trữ lên tới vài năm nhưng ít khi được sử dụng. Tùy theo nhu cầu khi access mà Glacier lại chia ra số sub class:
-- Glacier instance Retrieval: Rẻ hơn tới 68% so với S3 Standard IA. Cho phép access 1 file với thười gian ngắn khi có nhu cầu. Vd như tờ trình tín dụng rất ít khi cần, nhưng khi cần để kiểm toán thì cần phải có ngay.
-- Glacier Flexible Retrieval (Normal Glacier): Phù hợp cho data không yêu cầu access ngay hoặc chưa rõ, thời gian cần để access file có thể từ vài phút tới vài giờ. Phù hợp  cho việc lưu data backup hoặc Archive
-- S3 Glacier Deep Archive: Phù hợp cho việc lưu trữ dài lên đến 7-10 năm tùy theo tiêu chuẩn ngành như tài chính, y tế, ngân hàng,... Data được lưu trên các băng đĩa từ(magnetic). AWS cam kết có thể access data trong vòng 24h khi cần.
+* Chọn region của S3 cùng region với application (EC2, ECS) để tối ưu performance
+* Sử dụng Bucket Policy cho những data quan trọng. Cấp quyền vừa đủ cho user/role, hạn chế cấp S3FullAccess
+* Bật versioning để bảo vệ data tránh bị mất, xóa nhầm
+* Mã hóa data nhạy cảm (Client side or server side).
+* Enforce TLS để yêu cầu sd HTTPS khi truyền nhận file (chống hack).
+* Sử dụng VPC Endpoint để tăng tốc truy cập từ application.
+* Khi host static web, nên sử dụng kết hợp với Cloudfront để tối ưu chi phí và tăng khả năng trải nghiệm người dùng.
