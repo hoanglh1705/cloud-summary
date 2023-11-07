@@ -1,12 +1,12 @@
-# `RDS` - Relation Database Service
+# `ECS` - Elastic container service
 
 Tags: `AWS`
 
-Aliases: `RDS`
+Aliases: `ECS`
 
 1. ***Definition***
 
-* Là một service giúp người dùng tạo và quản lý các Relation Database
+* Là một service dịch vụ với high scalable và high performance dung để quản lý container và hỗ trợ docker containers.
 
 ##### Đặc trưng cơ bản
 

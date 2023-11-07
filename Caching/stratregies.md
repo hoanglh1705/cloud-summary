@@ -1,0 +1,108 @@
+# `Caching` - Caching patterns
+
+Tags: `pattern`
+
+Aliases: `Caching`
+
+1. ***Introduction***
+
+Khi bạn đang caching data từ database của bạn, có các caching patterns dành cho nó mà bạn có thể triển khai là Redis và Memcached, bao gồm cả hướng tiếp cận chủ động (proactive) và hồi đáp nhanh(reactive).
+Các pattern bạn chọn triển khai phải liên quan trực tiếp đến mục tiêu ứng dụng và loại caching bạn có.
+Có 2 phương pháp phổ biến là cache-aside hoặc lazy loading (một dạng của reactive approach) và Write-through (một dạng của proactive approach).
+
+* Một Cache-aside cache chỉ được update sau khi data được request.
+* Một write-through cache được update ngay khi database chính được update. Với 2 phương pháp trên, ứng dụng có thể quản lý data được lưu và bộ nhớ đệm (cached) và bao lâu.
+
+2. ***Caching Strategies***
+
+2.1. ***Cache-Aside (Lazy Loading)***
+
+* Cache-aside cache là caching strategy phổ biến nhất hiện có, Logic được tóm tắt như sau:
+  
+* Khi một ứng dụng của bạn cần đọc data từ db, ít sẽ kiểm tra cache trước để xác định xem dữ liệu có sẵn trong cache hay không.
+* Nếu dữ liệu có sẵn (a cache hit), dữ liệu được lưu trong cache sẽ được trả về và phản hồi sẽ được trả về cho caller.
+* Nếu data không có sẵn (a cache miss), sẽ query data từ db. Sau đó dữ liệu sẽ được lưu trữ và cache và trả về cho caller.
+![alt](https://docs.aws.amazon.com/images/whitepapers/latest/database-caching-strategies-using-redis/images/image3.png)
+
+* Cách này có một số ưu điểm sau:
+
+* Cache chỉ chứa những dữ liệu hệ thống thực sự cần (đã request) giúp giữ cho bộ nhớ được tiết kiệm về chi phí.
+* Triển khai phương pháp này rất đơn giản và mang lại hiệu suất ngay lập tức, cho dù bạn sử dụng framework đóng gói lazy caching hay bạn tự custom logic ứng dụng.
+
+* Một bất lợi khi sử dụng cache-aside như một caching pattern duy nhất đó là dữ liệu chỉ được tải vào cache sau khi cache không có data, một số chi phí sẽ được thêm vào thời gian phản hòi bạn đầu vì cần có thêm các dòng luân chuyển dữ liệu tới cache, và data có thể bị sai lệch nếu dữ liệu đuợc cập nhật dưới db.
+
+* Khi nào dùng cache aside?
+Cache aside thường được dùng trong trường hợp read-heavy workloads. Khi chúng ta thấy dữ liệu sử dụng nhiều, dữ liệu lặp lại... thì nên dùng cache aside. Lưu ý: Với cache aside, chúng ta thường chỉ lưu trữ dữ liệu nào tốn thời gian/resource để tính toán, xử lí, và dữ liệu đó dùng lại nhiều.
+2.2 ***Write-Through***
+
+* Một write through cache đảo ngược thứ tự của cách mà cache được phổ biến. Thay vì như lazy-loading là dữ liệu được load vào cache khi mà cache không có dữ liệu đó, cache proactive chủ động cập nhật data ngay sau khi primary database được cập nhật. Giờ đây cache chính là database chính của ứng dụng và đóng vai trò rất quan trọng vì nếu cache chêt thì ứng dụng sẽ chêt. Logic cơ bản được tóm tắt như sau:
+
+* Application(Ứng dụng), Batch hoặc backend  thực hiện update primary database.
+* Ngay sau đó, dữ liệu được cập nhật vô cache
+![alt](https://docs.aws.amazon.com/images/whitepapers/latest/database-caching-strategies-using-redis/images/image4.png)
+
+* A write-through cache
+
+* Write through pattern hầu như được triển khai cùng với lazy loading. Nếu Application lấy data từ cache mà không có bởi vì data chưa được ghi vào cache hoặc hết hạn (expired), lazy loading sẽ thực hiển để cập nhật cache.
+
+* Một write-through có một số ưu điểm sau:
+
+* Bởi vì cache được update đồng thời với primary database, nên khả năng dữ liệu được lưu trong cache là rất cao. Nhưng ngược lại, điều này mang lại hiệu suất cho hệ thống và trải nghiệm người dùng tốt hơn.
+* Tăng hiệu suất ở database vì tối ưu số lần đọc db (ít lần đọc hơn)
+
+* Một nhược điểm của phương pháp này là dữ liệu được yêu cầu không thường xuyên cũng được ghi vào cache, dẫn đến cache lớn hơn và tốn nhiều chi phí hơn. Quá trình lưu dữ liêu sẽ lâu vì phải chờ lưu xuống cache
+
+* Khi nào dùng Write through cache?
+Với cái tên write through cache thì chúng ta cũng có thể đoán được rằng chiến lược này dùng cho trường hợp write-heavy workloads
+
+* Một caching pattern hợp lý bao gồm cả việc sử dụng hiệu quả cả tính năng ghi vài tải từng phần dữ liệu của bạn, đồng thời đặt thời hạn (TTL) phù hợp  cho dữ liệu để giữ cho dữ liệu trên cache được phù hợp và gọn gàng
+
+2.3 ***Read-Through***
+
+Chiến lược anyf giống với cache-aside, nhưng thay vì application phải kết nối với cache và db, giờ đây application chỉ cần giao tiếp với cache, còn cache sẽ tự lấy dữ liệu ở chính nó hoặc xống db lấy dữ liệu. với trường hợp này, cache chính là db của ứng dụng, nó đóng vai trò rất quan trọng. Với cache-aside việc cache chết không ảnh hưởng đến ứng dụng, ứng dụng có thể lấy dữ liệu từ db, nhưng với read through cache, nếu cache chết thì ứng dụng chết
+
+* Application gửi request đến cache để lấy dữ liệu
+* Nếu cache có dữ liệu, nó sẽ trả dữ liệu ngay cho application. Nếu cache không có dữ liệu nó sẽ qua bước tiếp theo
+* Khi cache không chứa dữ liệu mà application cần, cache server sẽ tự động lấy dữ liệu từ database để update cho chính bản thân mình và trả về cho application
+* Trả về cho application
+
+Cách này có một số ưu điểm sau:
+
+* Application không cần quan tâm tới trường hợp cache miss. Mọi thứ cứ để cache server lo hết.
+
+Một nhược điểm của phương pháp này là:
+
+* Phải tìm được ứng dụng, platform... đóng vai trò cache phù hợp. Bởi vì một vài trường hợp, dữ liệu mà chúng ta muốn lấy trong database từ một/nhiều câu query phức tạp, lúc đó chúng ta phải tìm được platform thích hợp đóng vai trò cache.
+* Khó control thời gian hết hạn của cache. Khi dùng ứng dụng, có những trường hợp dữ liệu chỉ dùng 1 lần duy nhất(không nên/cần cache), nhưng có những dữ liệu được dùng rất thường xuyên. Có những dữ liệu chúng ta chỉ muốn cache 1 ngày, nhưng có những dữ liệu chúng ta muốn cache 1 tiếng. Với mô hình này, chúng ta không có quyền lựa chọn không cache dữ liệu. Mà bắt buộc phải cache hết tùy thuộc vào platform sử dụng.
+* Có nhiều dữ liệu cũ, dữ liệu không đồng nhất với database trong cache.
+
+Khi nào dùng Read through cache?
+
+* Read through cache thường được hay dùng trong trường hợp read-heavy workloads. Mặc dù trong cache chứa nhiều dữ liệu cũ, dữ liệu không dùng tới nữa, nhưng nhìn chung, nó đáp ứng khá tốt cho các trường hợp đọc dữ liệu nhiều.
+
+2.4 ***Write-Back aka Write behind***
+
+Write back khá giống với write through cache. Tuy nhiên ở write back, cache không được lưu dữ liệu xuống database ngay khi nhận request từ application.
+Cache sẽ đồng bộ dữ liệu xuống db định kì theo thười giam, hoặc theo số lượng dữ liệu được insert/update. Chúng ta có thể hiểu đơn giản write back
+Chúng ra có thể hiểu đơn gairn write back việc write back process. Để hiểu đơn giản hơn, chúng ta có thể đơn giản hóa sự khác biệt của write through cache và write back đó là:
+
+* Write through cache: lưu dữ liệu từ cache xuống db một cách đồng bộ
+* Write back: lưu dữ liệu từ cache xuống db bất đồng bộ
+
+Khi một request tới:
+
+* Dữ liệu sẽ được lưu vào cache
+* Sau một khoảng thời gian, cach sẽ gửi yêu cầu lưu dữ liệu vào db
+
+Lợi ích:
+
+* Giảm tải áp lực write xuống database, từ đó sẽ giảm được chi phí và các vấn đề liên quan tới database
+* Nếu kết hợp giữa Write back và Read through cache, chúng ta có một hệ thống tốt cho cả read heavy workloads và write heavy workloads. Bất lợi
+Hạn chế:
+* Dữ liệu có thể không đồng nhất giữa cache và database nếu như cache chưa kịp đồng bộ dữ liệu về database.
+* Nếu cache server bị chết, hệ thống sẽ bị chết, chúng ta có thể bị mất vĩnh viễn dữ liệu mà cache chưa kịp đồng bộ vào database.
+
+**Khi nào dùng Write back?** Chiến lược này phù hợp cho hệ thống write-heavy workloads.
+2.5 ***Write around***
+
+Write around là quá trình lưu trực tiếp dữ liệu từ application vào database và đọc dữ liệu theo một trong hai chiến lược: cache aside hoặc read through cache.

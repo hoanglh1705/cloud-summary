@@ -27,3 +27,219 @@ Việc lựa chọn class phù thuộc vào các yếu tố như:
 * Enforce TLS để yêu cầu sd HTTPS khi truyền nhận file (chống hack).
 * Sử dụng VPC Endpoint để tăng tốc truy cập từ application.
 * Khi host static web, nên sử dụng kết hợp với Cloudfront để tối ưu chi phí và tăng khả năng trải nghiệm người dùng.
+
+
+2. ***Features of RDS***
+
+** RDS Cung cấp các tính năng cơ bản: **
+* Cho phép tạo các DB instance hoặc cụm cluster một cách nhanh chóng.
+* Tự động fail-over giữa master-slave instance khi có sự cố
+* High-Availability: tự động cáu hình instance stand by, người dùng chỉ cần chọn.
+* Tự động scale dung lượng lưu trữ (optional)
+* Liên kết với cloidWatch để giám sát dễ dàng
+* Automate backup and manage retention.
+* Dễ dàng chỉnh sửa setting ở cấp độ Database sử dụng parameter group
+
+
+3. ***Features of RDS***
+
+Hỗ trợ các engine sau:
+* Amazon Aurora
+* Mysql
+* Mariadb
+* Postgresql
+* Oracle
+* SQL Server
+
+3. ***RDS Usecase***
+
+* RDS được sử dụng trong hầu hết các trường hợp cần Database dạng quan hệ. VD: Lưu trữ thông tin user,...
+* RDS Thích hợp cho các bài toán OLAP (Online Analatical Process) nhờ khả năng truy vấn mạnh mẽ, cấu hình có thể scale theo yêu cầu
+ 
+3. ***RDS Pricing***
+
+Về cơ bản RDS tính tiền dược trên các thông số:
+
+* instance size: instance size càng lớn cost càng cao, có hỗ trợ reserve instance tương tự EC2
+* Lượng data lưu trữ (GB/Month)
+* Dung lượng các bản snapshot được tạo ra
+* Các tính năng khác vd Backtracking đối với Aurora
+#
+
+##### RDS có thể được triển khai theo một số mô hình sau:
+
+##### Single instance
+* Chỉ có 1 instance duy nhất được tạo ra trên 1 Availability Zone (AZ)
+* Nếu sự cố xảy ra ở cấp độ AZ, database sẽ không thể truy cập
+* Phù hợp cho môi trường dev/test để tiết kiệm chi phí
+
+##### Single instance with Multi-AZ option = yes
+* Một bản sao cảu instance sẽ được tạo ra ở AZ khác và hoạt động dưới mode standby.
+* Nhiệm vụ của instance standby này là sync data từ masterm, không thể truy cập instance này.
+* Khi có sự cố xảy ra thì con standby sẽ được auto promo lên làm con master (Endpoint url được giữ nguyên)
+* Nếu enable Multi AZ, số tiền bỏ ra sẽ x2.
+* Phù hợp cho Database Prod
+
+##### Master - Read Only cluster
+* Một instance với mod ReadOnly sẽ được tạo ra và liên tục replica data từ master instance
+* instance này chỉ có thể đọc data. Phù hợp cho hệ thống có workload read>write, muốn tới ưu performance của Database
+* Sau khi được thiết lập quan hệ, instance được tạo ra sẽ kết hợp thành 1 cluster
+* \* Trong trạng thái instance đã hình thành cluster, nếu Master instance gặp sự cố, failover sẽ dược tự động thực hiện, ReadOnly instance được promo lên làm Master
+Lưu ý: Nếu 2 instance được tạo ra riêng biệt sau đó mới thiết lập quan hệ read-replica, Endpoint của 2 instance sẽ riêng biệt nên sau khi failover, cần chỉnh lại connection của application
+Nên tạo cluster sau đó mới add note read vào để quản lý connection ở cluster level
+
+##### Master - Read Only cluster with Multi-AZ option = yes
+* Tương tự mô hình Master - Read Only tuy nhiên các node đều được bật multi-AZ enabled.
+* Chi phí sẽ gấp 4 lần mô hình single instance
+
+##### Master - Multi Read cluster
+
+* Với mô hình này nhiều hơn 1 raeder instance sẽ được khởi tạo
+
+
+Aurora
+* Aurora là công nghệ database độc quyền cảu AWS, hỗ trợ 2 loại engine là MySQL và Postgresql
+* Aurora có 2 hình thức triển khai: Cluster (Master + Multi read replica), Serverless
+* Data được lưu tại 6 Replicas thông qua 3 AZ- High Available, Self-Healing, Auto-scaling
+* Compute: Cluster của DB instance tồn tại đa AZ, auto-scaling của Read Replicas
+* Cluster: Custom Endpoint cho Writer and reader DB instance
+* Aurora Serverless - cho việc chưa thể dự đoán/ đột ngột workloads, không có kế hoạch Capacity
+* Những tính năng vượt trội cảu Aurora so với RDS thông thường:
+- Hiệu năng tối hơn (So với RDS instance cùng cấu hình)
+- Hỗ trợ Backtracking (1 tính năng cho phép revert database về trạng thái trong quá khứ tối đa 72h.). Khác với restore từ snapshot đòi hỏi tạo instance mới, Backtracking restore ngay trên chsinh instance đang chạy
+- Tự động quản lý Write Endpoint, Read Endpoint ở cấp độ cluster
+
+##### Mô hình cluster của Aurora
+
+**Cluster Aurora bao gồm:**
+* 1 Master node (Primary instance)
+* 1 hoặc nhiều Replica nde (tối đa 15)
+Data của Aurora Cluster được lưu trên 1 storage layer gọi là Cluster Volumn span trên nhiều AZ để tăng HA.
+Data được Cluster Volumne tự động replica trên nhiều AZ. \* Số lượng copy không phụ thuộc vào số lượng instance của cluster.
+Cluster Volume tự động tăng size dựa vào nhu cầu của người dùng (k thể fix cứng size)
+
+**Aurora Global Cluster**
+
+Là một cơ chế cho phép tạo ra cụm cluster cross trên nhiều regions.
+* Tăng tốc độ read tại mỗi region tương đương với local read.
+* Mở rộng khả năng scale số lượng node read (limit 15 read nodes cho 1 cluster)
+* Failoverm Disaster recovery: rút ngắn RTO và giảm RPO khi xảy ra sự cố ở cấp độ region.
+Mặc định cluster ở region thứ 2 trở đi chỉ có thể read, tuy nhiên có thể enable write forwarding để điều hướng request tới primary cluster
+
+**Serverless của Aurora**
+
+Aurora serverless là 1 công nghệ cho phép tạo Database dưới dạng serverless
+Thay vì điều chỉnh cấu hình của DB instance, người dùng sẽ điều chỉnh ACU (Aurora Capacity Unit), ACU càng cao thì hiệu suất DB càng mạnh
+Phù hợp cho các hệ thống chưa biết rõ workload, hoặc workload có đặc trưng thay đổi lên xuống thường xuyên
+
+
+RDS cung cấp cơ chết proxy giúp quản lý connection tới các instance một cách hiệu quả, hạn chết bottle neck
+Khi sử dụng proxy, application sẽ không kết nối trực tiếp tới RDS mà thông qua proxy endpoint => khi chuyển qua rds proxy phải thay đổi endpoint
+Chi phí sẽ phát sinh thêm cho proxy
+Hiện tại hỗ trợ 3 engine : MySQL, Postgresql, SQL Server
+
+*** Usecase của Aurora***: Giống như của RDS, nhưng ít mantenance/ flexibility hơn/ performance hơn/ nhiều Features hơn
+
+Note: Elastic cache yêu cầu phải điều chỉnh code để đáp ứng nó, nên trong trường hợp cần cache mà k thay đổi code thì elastic cache k phải là t/h tốt
+
+
+
+
+
+
+Why encryption
+Encryption in fligth (SSL)
+* Data được mã hóa trước khi gửi và được giải mã sau khi nhận
+* SSL certificates giúp mã hóa data (HTTPS)
+* Encryption in fligth đảm bảo không có MITM(man in middle attack) có thể xảy ra
+
+Server side encryption at rest
+* Data được mã hóa trước khi nhận bởi server
+* Data được giải mã trước khi gửi tới client
+* Nó được lưu trữ theo 1 form mã hóa bởi key (thường 1 data key)
+* Key Mã hóa/Giải mã phải được quản lý bở 1 nơi nào đó và server phải có thể access nó ( có thể **KMS**)
+
+Client side encryption
+Data được mã hóa bở client và không thể được giải mã bởi server
+* Data sẽ được giải mã bởi client nhận data
+* Server nên không có thể giải mã data
+* could leverage envelope encryption
+
+* Bất kể lúc nào chúng ta nghe "encryption" cho 1 aws service, nó chính là KMS (most likely)
+* AWS quản lý encryption keys cho chúng ta
+* Fully integrated với IAM để authorization
+* Cách đơn giản để quản lý access cho data của bạn
+* Có thể audit KMS Key được sử dụng ở đâu thông qua CloudTrail
+* Khả năng integrated đồng bộ với các AWS Services(EBS, S3, RDS, SSM,...)
+
+
+- Khi bạn đang caching data từ database của bạn, có các caching patterns dành cho nó mà bạn có thể triển khai là Redis và Memcached, bao gồm cả hướng tiếp cận chủ động (proactive) và hồi đáp nhanh(reactive).
+Các pattern bạn chọn triển khai phải liên quan trực tiếp đến mục tiêu ứng dụng và loại caching bạn có.
+- Có 2 phương pháp phổ biến là cache-aside hoặc lazy loading (một dạng của reactive approach) và Write-through (một dạng của proactive approach). Một Cache-aside cache chỉ được update sau khi data được request.
+Một write-through cache được update ngay khi database chính được update. Với 2 phương pháp trên, ứng dụng có thể quản lý data được lưu và bộ nhớ đệm (cached) và bao lâu.
+
+2. ***Cache-Aside (Lazy Loading)***
+
+* Cache-aside cache là caching strategy phổ biến nhất hiện có, Logic được tóm tắt như sau:
+- Khi một ứng dụng của bạn cần đọc data từ db, ít sẽ kiểm tra cache trước để xác định xem dữ liệu có sẵn trong cache hay không.
+- Nếu dữ liệu có sẵn (a cache hit), dữ liệu được lưu trong cache sẽ được trả về và phản hồi sẽ được trả về cho caller.
+- Nếu data không có sẵn (a cache miss), sẽ query data từ db. Sau đó dữ liệu sẽ được lưu trữ và cache và trả về cho caller.
+[markdown](https://docs.aws.amazon.com/images/whitepapers/latest/database-caching-strategies-using-redis/images/image3.png)
+
+* Cách này có một số ưu điểm sau:
+- Cache chỉ chứa những dữ liệu hệ thống thực sự cần (đã request) giúp giữ cho bộ nhớ được tiết kiệm về chi phí.
+- Triển khai phương pháp này rất đơn giản và mang lại hiệu suất ngay lập tức, cho dù bạn sử dụng framework đóng gói lazy caching hay bạn tự custom logic ứng dụng.
+* Một bất lợi khi sử dụng cache-aside như một caching pattern duy nhất đó là dữ liệu chỉ được tải vào cache sau khi cache không có data, một số chi phí sẽ được thêm vào thời gian phản hòi bạn đầu vì cần có thêm các dòng luân chuyển dữ liệu tới cache
+
+
+* Một write through cache đảo ngược thứ tự của cách mà cache được phổ biến. Thay vì như lazy-loading là dữ liệu được load vào cache khi mà cache không có dữ liệu đó, cache proactive chủ động cập nhật data ngay sau khi primary database được cập nhật. Logic cơ bản được tóm tắt như sau:
+- Application(Ứng dụng), Batch hoặc backend  thực hiện update primary database.
+- Ngay sau đó, dữ liệu được cập nhật vô cache
+
+- A write-through cache
+- Write through pattern hầu như được triển khai cùng với lazy loading. Nếu Application lấy data từ cache mà không có bởi vì data chưa được ghi vào cache hoặc hết hạn (expired), lazy loading sẽ thực hiển để cập nhật cache.
+* Một write-through có một số ưu điểm sau:
+- Bởi vì cache được update đồng thời với primary database, nên khả năng dữ liệu được lưu trong cache là rất cao. Nhưng ngược lại, điều này mang lại hiệu suất cho hệ thống và trải nghiệm người dùng tốt hơn
+- Tăng hiệu suất ở database vì tối ưu số lần đọc db (ít lần đọc hơn)
+* Một nhược điểm của phương pháp này là dữ liệu được yêu cầu không thường xuyên cũng được ghi vào cache, dẫn đến cache lớn hơn và tốn nhiều chi phí hơn.
+* Một caching pattern hợp lý bao gồm cả việc sử dụng hiệu quả cả tính năng ghi vài tải từng phần dữ liệu của bạn, đồng thời đặt thời hạn (TTL) phù hợp  cho dữ liệu để giữ cho dữ liệu trên cache được phù hợp và gọn gàng
+
+
+Chiến lược anyf giống với cache-aside, nhưng thay vì application phải kết nối với cache và db, giờ đây application chỉ cần giao tiếp với cache, còn cache sẽ tự lấy dữ liệu ở chính nó hoặc xống db lấy dữ liệu. với trường hợp này, cache chính là db của ứng dụng, nó đóng vai trò rất quan trọng. Với cache-aside việc cache chết không ảnh hưởng đến ứng dụng, ứng dụng có thể lấy dữ liệu từ db, nhưng với read through cache, nếu cache chết thì ứng dụng ch
+
+- Application gửi request đến cache để lấy dữ liệu
+- Nếu cache có dữ liệu, nó sẽ trả dữ liệu ngay cho application. Nếu cache không có dữ liệu nó sẽ qua bước tiếp theo
+- Khi cache không chứa dữ liệu mà application cần, cache server sẽ tự động lấy dữ liệu từ database để update cho chính bản thân mình và trả về cho application
+- Trả về cho application
+
+* Cách này có một số ưu điểm sau:
+
+- Application không cần quan tâm tới trường hợp cache miss. Mọi thứ cứ để cache server lo hết.
+* Một nhược điểm của phương pháp này là:
+- Phải tìm được ứng dụng, platform... đóng vai trò cache phù hợp. Bởi vì một vài trường hợp, dữ liệu mà chúng ta muốn lấy trong database từ một/nhiều câu query phức tạp, lúc đó chúng ta phải tìm được platform thích hợp đóng vai trò cache.
+- Khó control thời gian hết hạn của cache. Khi dùng ứng dụng, có những trường hợp dữ liệu chỉ dùng 1 lần duy nhất(không nên/cần cache), nhưng có những dữ liệu được dùng rất thường xuyên. Có những dữ liệu chúng ta chỉ muốn cache 1 ngày, nhưng có những dữ liệu chúng ta muốn cache 1 tiếng. Với mô hình này, chúng ta không có quyền lựa chọn không cache dữ liệu. Mà bắt buộc phải cache hết tùy thuộc vào platform sử dụng.
+- Có nhiều dữ liệu cũ, dữ liệu không đồng nhất với database trong cache.
+
+* Khi nào dùng Read through cache?
+
+- Read through cache thường được hay dùng trong trường hợp read-heavy workloads. Mặc dù trong cache chứa nhiều dữ liệu cũ, dữ liệu không dùng tới nữa, nhưng nhìn chung, nó đáp ứng khá tốt cho các trường hợp đọc dữ liệu nhiều.
+
+Write back khá giống với write through cache. Tuy nhiên ở write back, cache không được lưu dữ liệu xuống database ngay khi nhận request từ application.
+Cache sẽ đồng bộ dữ liệu xuống db định kì theo thười giam, hoặc theo số lượng dữ liệu được insert/update. Chúng ta có thể hiểu đơn giản write back 
+Chúng ra có thể hiểu đơn gairn write back việc write back process. Để hiểu đơn giản hơn, chúng ta có thể đơn giản hóa sự khác biệt của write through cache và write back đó là:
+- Write through cache: lưu dữ liệu từ cache xuống db một cách đồng bộ
+- Write back: lưu dữ liệu từ cache xuống db bất đồng bộ
+
+Khi một request tới:
+* Dữ liệu sẽ được lưu vào cache
+* Sau một khoảng thời gian, cach sẽ gửi yêu cầu lưu dữ liệu vào db
+
+Lợi ích:
+* Giảm tải áp lực write xuống database, từ đó sẽ giảm được chi phí và các vấn đề liên quan tới database
+* Nếu kết hợp giữa Write back và Read through cache, chúng ta có một hệ thống tốt cho cả read heavy workloads và write heavy workloads. Bất lợi
+Hạn chế:
+* Dữ liệu có thể không đồng nhất giữa cache và database nếu như cache chưa kịp đồng bộ dữ liệu về database.
+* Nếu cache server bị chết, hệ thống sẽ bị chết, chúng ta có thể bị mất vĩnh viễn dữ liệu mà cache chưa kịp đồng bộ vào database.
+
+Khi nào dùng Write back? 
+Chiến lược này phù hợp cho hệ thống write-heavy workloads.

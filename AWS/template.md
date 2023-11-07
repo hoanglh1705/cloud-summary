@@ -1,18 +1,16 @@
-# `S3` - Simple Storage Service
+# `Caching` - Caching patterns 
 
-Tags: `s3`
+Tags: `pattern`
 
-Aliases: `Definition`
+Aliases: `Caching`
 
-1. ***Definition***
+1. ***Introduction***
 
-Là một dịch vụ lưu trữ dạng Object cung cấp khả năng mở rộng avaibality, performance.
-KH có thể sử dụng S3 để lưu trữ và bảo vệ nhiều loại data cho các usecase khác như:
+* Khi bạn đang caching data từ database của bạn, có các caching patterns dành cho nó mà bạn có thể triển khai là Redis và Memcached, bao gồm cả hướng tiếp cận chủ động (proactive) và hồi đáp nhanh(reactive).
+Các pattern bạn chọn triển khai phải liên quan trực tiếp đến mục tiêu ứng dụng và loại caching bạn có.
+* Có 2 phương pháp phổ biến là cache-aside hoặc lazy loading (một dạng của reactive approach) và Write-through (một dạng của proactive approach). Một Cache-aside cache chỉ được update sau khi data được request.
+Một write-through cache được update ngay khi database chính được update. Với 2 phương pháp trên, ứng dụng có thể quản lý data được lưu và bộ nhớ đệm (cached) và bao lâu.
 
-* data lake
-* Enterprise application
-* IoT device
-* Big Data & Analytic
   
 S3 cung cấp nhiều managed feature giúp tối ưu, tổ chức và cấu hình access tới data đáp ứng nhu cầu về business, organization and compliance.
 
