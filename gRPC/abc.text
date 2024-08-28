@@ -1,17 +1,13 @@
-# `Caching` - Caching patterns
+# `gPRC` - 
 
-Tags: `pattern`
+Tags: `technology`
 
-Aliases: `Caching`
+Aliases: `gPRC`
 
 1. ***Introduction***
 
-Khi bạn đang caching data từ database của bạn, có các caching patterns dành cho nó mà bạn có thể triển khai là Redis và Memcached, bao gồm cả hướng tiếp cận chủ động (proactive) và hồi đáp nhanh(reactive).
-Các pattern bạn chọn triển khai phải liên quan trực tiếp đến mục tiêu ứng dụng và loại caching bạn có.
-Có 2 phương pháp phổ biến là cache-aside hoặc lazy loading (một dạng của reactive approach) và Write-through (một dạng của proactive approach).
-
-* Một Cache-aside cache chỉ được update sau khi data được request.
-* Một write-through cache được update ngay khi database chính được update. Với 2 phương pháp trên, ứng dụng có thể quản lý data được lưu và bộ nhớ đệm (cached) và bao lâu.
+gRPC là một kiến trúc open-source API. Nó dựa trên mô hình Remote procedure call (RPC). 
+Trong RPC giao tiếp giữa máy khách và máy chủ hoạt động như thể các yêu cầu api máy khách là hoạt động cục bộ hoặc yêu cầu là bắt nguồn từ nội bộ máy chủ
 
 2. ***Caching Strategies***
 

@@ -15,3 +15,15 @@ Aliases: `Definition`
 2. ***CloudFront - Origins***
 
 **S3 bucket**
+
+* For distributing files and caching them at the edge
+* Enhanced security with the CloudFront Origin Access Control (OAC)
+* OAC is replacing OAI (Origin Access Identity)
+* CloudFront can used as an ingress(To upload file to S3)
+
+**Custom Origin(HTTP)**
+
+* Application Load Balancer
+* EC2 Instance
+* S3 website
+* Any http Backend 
