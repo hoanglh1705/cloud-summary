@@ -1,0 +1,35 @@
+### API Gateway là gì?
+
+API Gateway là một thành phần trung gian nằm giữa các client (người dùng, ứng dụng) và các microservices hoặc backend services. Nó đóng vai trò như một "điểm vào" duy nhất cho tất cả các yêu cầu API từ client, sau đó định tuyến các yêu cầu này tới các dịch vụ phù hợp trên backend.
+
+### Tính năng của API Gateway:
+
+1. **Routing**: API Gateway xác định dịch vụ backend nào cần xử lý một yêu cầu cụ thể và chuyển tiếp yêu cầu đó đến đúng dịch vụ.
+
+2. **Load Balancing**: Nó có thể phân phối các yêu cầu tới nhiều bản sao của một dịch vụ để tối ưu hóa hiệu suất và đảm bảo dịch vụ luôn sẵn sàng.
+
+3. **Authentication và Authorization**: API Gateway có thể xác thực người dùng và kiểm tra quyền truy cập của họ trước khi cho phép truy cập vào các dịch vụ.
+
+4. **Rate Limiting và Throttling**: Hạn chế số lượng yêu cầu mà một client có thể thực hiện trong một khoảng thời gian nhất định, giúp bảo vệ hệ thống khỏi các cuộc tấn công DDoS và quản lý tài nguyên hiệu quả.
+
+5. **Caching**: API Gateway có thể lưu trữ các phản hồi từ backend trong một khoảng thời gian để giảm tải cho các dịch vụ backend và tăng tốc độ phản hồi.
+
+6. **Transformation**: Nó có khả năng thay đổi định dạng của yêu cầu hoặc phản hồi, ví dụ như chuyển đổi giữa các định dạng JSON và XML.
+
+7. **Logging và Monitoring**: API Gateway thu thập dữ liệu về các yêu cầu và phản hồi, cung cấp khả năng giám sát, ghi nhật ký, và phân tích hiệu suất.
+
+8. **Security**: API Gateway cung cấp các cơ chế bảo mật như SSL termination, bảo vệ khỏi các cuộc tấn công như injection, cross-site scripting (XSS), và cross-site request forgery (CSRF).
+
+### Khi nào cần sử dụng API Gateway?
+
+1. **Microservices Architecture**: Khi ứng dụng được chia thành nhiều microservices, API Gateway giúp tập trung hóa việc quản lý và điều phối các yêu cầu đến các dịch vụ khác nhau.
+
+2. **Client-Specific API Needs**: Khi cần cung cấp các API khác nhau cho các loại client khác nhau (web, mobile, IoT), API Gateway có thể định dạng và xử lý các yêu cầu khác nhau một cách phù hợp.
+
+3. **Centralized Security Management**: API Gateway đơn giản hóa việc quản lý xác thực, ủy quyền, và bảo mật cho tất cả các dịch vụ từ một nơi duy nhất.
+
+4. **Load Management and Scalability**: Khi cần quản lý lưu lượng truy cập lớn và đảm bảo hiệu suất, API Gateway có thể giúp cân bằng tải và cache để tăng tốc độ phản hồi.
+
+5. **API Monetization**: Nếu bạn muốn tính phí cho việc sử dụng API, API Gateway có thể theo dõi và quản lý việc này.
+
+Tóm lại, API Gateway là một công cụ quan trọng trong các kiến trúc hiện đại, đặc biệt là khi làm việc với microservices, giúp quản lý và tối ưu hóa các giao tiếp API một cách hiệu quả.

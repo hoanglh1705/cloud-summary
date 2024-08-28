@@ -1,0 +1,37 @@
+1. How do you handle concurrency in Go? Can you explain the use of goroutines and channels?
+
+- Goroutines là một trong những tính năng nổi bật của Golang, cho phép thực hiện các tác vụ đồng thời (concurrently) một cách dễ dàng. Goroutines có thể hiểu như là các "lightweight threads," tức là các thread nhẹ. Chúng hoạt động tương tự như threads trong các ngôn ngữ lập trình khác nhưng nhẹ hơn và quản lý hiệu quả hơn.
+
+- Cách tạo Goroutine: Goroutine được tạo ra bằng cách thêm từ khóa go trước một hàm hoặc một lời gọi hàm. Khi một hàm được chạy dưới dạng goroutine, nó sẽ thực hiện đồng thời với các goroutine khác mà không làm chặn chương trình chính.
+
+** Lợi ích của Goroutines:
+
+- Hiệu suất: Goroutines được quản lý bởi runtime của Go và sử dụng ít tài nguyên hơn threads truyền thống. Chúng khởi động nhanh và chiếm rất ít bộ nhớ (chỉ khoảng 2KB).
+- Đơn giản: Goroutines rất dễ sử dụng nhờ cú pháp đơn giản. Bạn không cần lo lắng nhiều về quản lý tài nguyên như khi làm việc với threads.
+
+2. Channels
+Channels là cơ chế giao tiếp chính giữa các goroutine trong Go. Chúng được sử dụng để gửi và nhận dữ liệu giữa các goroutine một cách đồng bộ và an toàn.
+
+Cách hoạt động của Channels: Channels có thể được hiểu như là các đường ống, nơi một goroutine có thể gửi dữ liệu vào, và một goroutine khác có thể lấy dữ liệu ra.
+
+Sử dụng Channels:
+
+Giao tiếp đồng bộ: Channels đảm bảo rằng khi một goroutine gửi dữ liệu vào channel, nó sẽ bị chặn (block) cho đến khi có một goroutine khác nhận dữ liệu đó. Điều này giúp bạn dễ dàng đồng bộ hóa giữa các goroutine.
+Channels có thể là buffered hoặc unbuffered:
+Unbuffered channel: Gửi và nhận phải xảy ra đồng thời, nghĩa là goroutine gửi sẽ chờ cho đến khi có goroutine nhận.
+Buffered channel: Cho phép gửi một số lượng giá trị nhất định mà không cần có goroutine nhận ngay lập tức.
+
+3. Race Conditions và Đồng bộ hóa
+Race Condition xảy ra khi hai hoặc nhiều goroutine truy cập vào cùng một tài nguyên chung (như biến toàn cục) đồng thời mà không được đồng bộ hóa đúng cách, dẫn đến kết quả không mong muốn.
+
+Mutexes và các công cụ đồng bộ khác:
+
+Mutex: Được sử dụng để khóa tài nguyên chung trong khi một goroutine đang truy cập vào nó, đảm bảo rằng chỉ có một goroutine có thể truy cập tài nguyên đó tại một thời điểm.
+
+WaitGroups: Được sử dụng để chờ cho đến khi tất cả các goroutine hoàn thành trước khi tiếp tục thực hiện phần tiếp theo của chương trình.
+
+Tổng kết:
+Goroutines là công cụ mạnh mẽ để thực hiện các tác vụ đồng thời trong Go.
+Channels cung cấp cách giao tiếp an toàn và đồng bộ giữa các goroutine.
+Race Conditions có thể được tránh bằng cách sử dụng các công cụ đồng bộ hóa như Mutexes và WaitGroups.
+Sự kết hợp của các công cụ này giúp Golang trở thành một ngôn ngữ mạnh mẽ cho lập trình đồng thời, đặc biệt là khi xây dựng các hệ thống backend hiệu suất cao và có khả năng mở rộng.
