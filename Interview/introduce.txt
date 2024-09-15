@@ -1,0 +1,3 @@
+Hello everyone, my name Le Huu Hoang, i'm 28 years old, and I have dedicated the last over 5 years of my career to working in the back-end development field
+within the dynamic environment of the banking sector. With a focus on building and maintaining high-availability and high-performance services, I'm proficient in Golang and .NET and strong experience in SQL. Additionally, I have extensive experience in building microservices systems and building systems on the cloud, specifically with AWS. I am excited to share my
+experiences and use that contribute to the next projects

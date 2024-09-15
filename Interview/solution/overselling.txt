@@ -1,0 +1,13 @@
+1. Sử dụng locking
+- optimistic locking
+- pessimistic locking
+2. sử dụng distributed transaction
+- 2PC 
+- Saga design Pattern
+3. Cơ chế quota và reservation
+4. Eventualy
+5. Rate Limiting và Throttling
+6. Real-Time Inventory Check
+7. Queue-Based Ordering System
+Kết luận:
+Tránh overselling trong một hệ thống phân tán đòi hỏi các phương pháp kết hợp như locking, transaction phân tán, caching hiệu quả, và xử lý giao dịch theo hàng đợi. Lựa chọn chiến lược phụ thuộc vào loại hệ thống và yêu cầu về tính nhất quán, hiệu suất, cũng như khả năng mở rộng của bạn.

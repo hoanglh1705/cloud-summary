@@ -1,0 +1,100 @@
+experience with golang and can you describe a complex system that your design of significantly contributed to
+Ohh, regarding I see more of a project back order right you you have working in that order that big commerce platform back order. do you see mentioned that you you the the design high available and scalable systems to synchronize data correct believe test ETL how do you do it in your in back order
+Other than that, was the most toughest situation you ever faced and how did you overcome it?
+mean in this scenario you can assume main and yeah like junior you put the 1st for you, now you are giving us the direction to implement the system.
+                                                                                                                                                                                                
+Problem Statement
+Design a job scheduler that runs jobs at a scheduled interval
+
+Requirement
+Design a distributed job scheduler in which the client can register a task and the time at which it should be executed. The jobs needs to be picked up within 1 minute of its scheduled time of execution. The tasks can be of two types.
+* One-time task
+* Recurring tasks
+Clients can register tasks with a cron syntax and our scheduler needs to execute it as per the schedule. A client can submit a task that is one-time in nature, which means once executed it will never be picked again.
+ 
+Potential applications:
+* Reminders in calendar applications
+* Distributed cron
+* Sending scheduled notifications to users
+
+
+
+
+
+explain about your most interested project 
+
+what kind of orchestration (like kubernete) platform you are using at the moment?
+
+what kind of architectural improvements you would do to the current system and why use doing that
+
+Do you know what is ETL stands for?
+
+The legacy application is still in use.
+The table contains approximately 4 million records.
+We need those product records for a new application.
+You need to design an ETL system to transfer data from the legacy application database to the new application database.
+ETL frequency 15 min (ETL : extract, transform, and load)
+has context menu
+
+Problem Statement
+
+Design a job scheduler that runs jobs at a scheduled interval
+ 
+Requirement
+
+Design a distributed job scheduler in which the client can register a task and the time at which it should be executed. The jobs needs to be picked up within 1 minute of its scheduled time of execution. The tasks can be of two types.
+
+•  One-time task
+
+•  Recurring tasks
+Clients can register tasks with a cron syntax and our scheduler needs to execute it as per the schedule. 
+A client can submit a task that is one-time in nature, which means once executed it will never be picked again.
+ 
+Potential applications:
+
+•  Reminders in calendar applications
+•  Distributed cron
+
+•  Sending scheduled notifications to users
+has context menu
+
+how to find more about my SQL or POSTGRES data structure works
+you will try to put out a feature or our libraries or or or or solutions, right? How do you come up with the the issue Like what is being assessed before the addition will change was being made. Yeah, you've even even like changing from Postgres to my seque
+
+
+Let's say today the ecommerce we have a new feature that we have to deliver a certain kind of text.
+We need to apply for this product.
+
+This is why the BA that you.
+
+So how do you make sure that the requirement is captured as accurate as possible?
+
+So then let's say you are assigned to a team that you have to work with another developer which is to be a a low performing developer, right? So in that kind of scenario, how do you handle that?
+
+2.ETL Design Question
+ 
+There is a product details table in a legacy application.
+ 
+The legacy application is still in use.
+ 
+The table contains approximately 4 million records.
+ 
+We need those product records for a new application.
+ 
+You need to design an ETL system to transfer data from the legacy application database to the new application database.
+ 
+ETL frequency 15 min
+
+
+
+
+Just so let's say given that that's constraints to the to the legacy data based, there's no team managing it.
+
+The database you need only thing that they have is access to credentials.
+
+To that that are all like the see application, there's no one maintaining it is very old, so there's no plugins.
+
+There's nothing you can install, but.
+
+However, there is a column that contains the last updated column.
+So how do you plan to do this?
